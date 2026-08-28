@@ -4,8 +4,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-use function Laravel\Prompts\note;
-
 return new class extends Migration
 {
     /**
@@ -15,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('registration_id');
-            $table->decimal('amount', 8, 2);
-            $table->string('payment_method');
+            $table->foreignId('registration_id')->constrained('registrations')->onDelete('cascade');
+            $table->decimal('amount', 10, 2);
+            $table->enum('payment_method', ['tarjeta', 'efectivo', 'transferencia']);
+            $table->enum('status', ['pendiente', 'completado', 'fallido', 'reembolsado'])->default('pendiente');
             $table->date('payment_date');
+            $table->string('transaction_reference')->nullable();
             $table->text('note')->nullable();
             $table->timestamps();
         });
